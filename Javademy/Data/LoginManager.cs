@@ -2,7 +2,6 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using System.Text.Json;
 using Microsoft.Maui.Storage;
 using Javademy.Models;
 
@@ -19,7 +18,7 @@ namespace Javademy.Data
         }
 
         // LoginAsync method to handle user login
-        public async Task<string> LoginAsync(Login credentials)
+        public async Task<(string token, string errorMessage)> LoginAsync(Login credentials)
         {
             try
             {
@@ -28,32 +27,34 @@ namespace Javademy.Data
 
                 if (response.IsSuccessStatusCode)
                 {
-                    // Deserialize the response and get the token
-                    var loginResponse = await response.Content.ReadFromJsonAsync<LoginRespond>();
-                    var token = loginResponse?.Token;
-
-                    if (token != null)
+                    // Deserialize the response body (which includes the Token)
+                    var responseBody = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                    if (responseBody != null && responseBody.ContainsKey("token"))
                     {
+                        var token = responseBody["token"];
+
                         // Save the token securely using SecureStorage
                         await SecureStorage.SetAsync("auth_token", token);
-                        return token; // Return the token if successful
+
+                        return (token, null); // Return the token if successful
+                    }
+                    else
+                    {
+                        return (null, "Unexpected error: Token is missing.");
                     }
                 }
                 else
                 {
-                    // Handle failed login attempts
-                    Console.WriteLine($"Login failed: {response.StatusCode}");
-                    return null;
+                    // Handle unsuccessful login attempts, return error message
+                    return (null, "Login failed: Invalid username or password.");
                 }
             }
             catch (Exception ex)
             {
                 // Handle exceptions (e.g., network issues)
                 Console.WriteLine($"Login Error: {ex.Message}");
-                return null;
+                return (null, "An error occurred while trying to log in. Please try again.");
             }
-
-            return null;
         }
 
         public async Task AddAuthHeaderAsync()

@@ -6,13 +6,14 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Javademy.Models;
+using Javademy.Pages;
 
 namespace Javademy.Data
 {
     public static class CategoriesManager
     {
         private static readonly string BaseAddress = "https://actbackendseervices.azurewebsites.net/api/categories";
-        private static string authorizationKey;
+        private static string authorizationKey = LoginPage.AuthToken;
         private static HttpClient client;
 
         // Method to get or create an HttpClient instance
@@ -22,24 +23,25 @@ namespace Javademy.Data
                 return client;
 
             client = new HttpClient();
-            //await SetAuthorizationHeaderAsync();
+            await SetAuthorizationHeaderAsync();
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             client.DefaultRequestHeaders.ConnectionClose = true;
 
             return client;
         }
 
-        // Method to set the authorization header
-        //private static async Task SetAuthorizationHeaderAsync()
-        //{
-        //    if (string.IsNullOrEmpty(authorizationKey))
-        //    {
-        //        client = new HttpClient(); // Initialize client before use
-        //        var response = await client.GetStringAsync("https://actbackendseervices.azurewebsites.net/api/login"); //Ensure this is the correct login endpoint
-        //        authorizationKey = JsonSerializer.Deserialize<string>(response);
-        //        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authorizationKey);
-        //    }
-        //}
+        //Method to set the authorization header
+        private static async Task SetAuthorizationHeaderAsync()
+        {
+            //var token = await SecureStorage.GetAsync("auth_token"); // Retrieve token from SecureStorage
+            if (string.IsNullOrEmpty(LoginPage.AuthToken))
+            {
+                throw new UnauthorizedAccessException("Token not found.");
+            }
+
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", LoginPage.AuthToken);
+        }
+
 
         // Method to get all categories
         public static async Task<IEnumerable<Category>> GetAllCategories()

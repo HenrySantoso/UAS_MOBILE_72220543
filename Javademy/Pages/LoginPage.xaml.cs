@@ -1,53 +1,61 @@
-using Microsoft.Maui.Controls;
-using Javademy.Data;
 using Javademy.Models;
-using System;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace Javademy.Pages
 {
     public partial class LoginPage : ContentPage
     {
-        private readonly LoginManager _loginManager;
+        int count = 0;
+        public static string AuthToken { get; private set; }
 
         public LoginPage()
         {
             InitializeComponent();
-            _loginManager = new LoginManager(); // Initialize LoginManager
+        }
+
+        private void OnTogglePasswordVisibilityClicked(object sender, EventArgs e)
+        {
+            // Toggle the password visibility
+            PasswordEntry.IsPassword = !PasswordEntry.IsPassword;
+
+            // Change button text based on password visibility
+            TogglePasswordVisibilityButton.Text = PasswordEntry.IsPassword ? "Show Password" : "Hide Password";
         }
 
         private async void OnLoginClicked(object sender, EventArgs e)
         {
-            string username = UsernameEntry.Text;
-            string password = PasswordEntry.Text;
+            var username = UsernameEntry.Text;
+            var password = PasswordEntry.Text;
 
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            var loginData = new
             {
-                ErrorLabel.Text = "Please enter both username and password.";
-                ErrorLabel.IsVisible = true;
-                return;
-            }
+                userName = username,
+                password = password
+            };
 
-            try
+            var json = JsonConvert.SerializeObject(loginData);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using (var client = new HttpClient())
             {
-                var credentials = new Login { UserName = username, Password = password };
-                string token = await _loginManager.LoginAsync(credentials);
-
-                if (token != null)
+                var response = await client.PostAsync("https://actbackendseervices.azurewebsites.net/api/login", content);
+                if (response.IsSuccessStatusCode)
                 {
-                    // Successful login, navigate to MainPage
-                    ErrorLabel.IsVisible = false;
-                    await Navigation.PushAsync(new MainPage());
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    AuthToken = JsonConvert.DeserializeObject<Login>(responseContent).token;
+
+                    // Save the token (e.g., in Preferences)
+                    Preferences.Set("auth_token", AuthToken);
+
+                    // Navigate to the next page
+                    Application.Current.MainPage = new AppShell();
                 }
                 else
                 {
-                    // Invalid credentials
-                    ErrorLabel.Text = "Invalid username or password.";
-                    ErrorLabel.IsVisible = true;
+                    // Handle login failure
+                    await DisplayAlert("Login Failed", "Invalid username or password", "OK");
                 }
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Error", $"Login failed: {ex.Message}", "OK");
             }
         }
     }
