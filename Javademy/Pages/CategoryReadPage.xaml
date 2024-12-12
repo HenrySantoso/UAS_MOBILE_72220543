@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Javademy.Pages.CategoryReadPage"
+             xmlns:data="clr-namespace:Javademy.Models"
+             BackgroundColor="#FAFAFA">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem IconImageSource="refresh.png" 
+                     Clicked="OnRefreshButtonClicked"/>
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="Auto,*" ColumnDefinitions="*">
+        <!-- Header Section -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Padding="20,10">
+            <!-- Search Entry -->
+            <Entry x:Name="SearchEntry"
+                   Placeholder="Search Categories"
+                   Margin="10,0,0,0"
+                   BackgroundColor="#E5E5E5"
+                   TextColor="#333"
+                   VerticalOptions="Center"
+                   TextChanged="OnSearchTextChanged" />
+            <!-- Handle text change event -->
+        </Grid>
+
+        <!-- Catalog Collection View -->
+        <CollectionView x:Name="CategoryCollectionView"
+                        Grid.Row="1"
+                        Margin="30,10"
+                        SelectionMode="Single"
+                        HeightRequest="600">
+            <!-- Vertical Layout for Items -->
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="20" />
+            </CollectionView.ItemsLayout>
+
+            <!-- Item Template -->
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="data:Category">
+                    <!-- Card-like Layout for Each Item -->
+                    <Frame HasShadow="True"
+                           CornerRadius="15"
+                           Padding="20"
+                           BackgroundColor="White"
+                           Margin="0,0,0,20"
+                           BorderColor="#D1D1D1">
+                        <VerticalStackLayout Spacing="8">
+                            <!-- Category ID -->
+                            <Label Text="{Binding CategoryId}"
+                                   FontSize="Medium"
+                                   FontAttributes="Bold"
+                                   TextColor="#333" />
+
+                            <!-- Category Name with Bold Font -->
+                            <Label Text="{Binding Name}"
+                                   FontSize="Large"
+                                   FontAttributes="Bold"
+                                   TextColor="#333" />
+
+                            <!-- Category Description with Subtle Color -->
+                            <Label Text="{Binding Description}"
+                                   FontSize="Medium"
+                                   TextColor="#666"
+                                   LineBreakMode="WordWrap" />
+
+                            <!-- Action Buttons (Edit and Delete) -->
+                            <HorizontalStackLayout Spacing="10">
+                                <!-- Edit Button -->
+                                <Button Text="Edit"
+                                        BackgroundColor="#4A90E2"
+                                        TextColor="White"
+                                        FontAttributes="Bold"
+                                        CornerRadius="20"
+                                        Padding="10,5"
+                                        CommandParameter="{Binding CategoryId}"
+                                        Clicked="OnEditButtonClicked"/>
+
+                                <!-- Delete Button -->
+                                <Button Text="Delete"
+                                        BackgroundColor="#D9534F"
+                                        TextColor="White"
+                                        FontAttributes="Bold"
+                                        CornerRadius="20"
+                                        Padding="10,5"
+                                        CommandParameter="{Binding CategoryId}"
+                                        Clicked="OnDeleteButtonClicked"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+
+    <!-- Add a gradient background for a more elegant look -->
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#E5E5E5" Offset="0.0" />
+            <GradientStop Color="#FAFAFA" Offset="1.0" />
+        </LinearGradientBrush>
+    </ContentPage.Background>
+</ContentPage>

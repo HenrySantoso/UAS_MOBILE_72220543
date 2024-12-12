@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Javademy.Pages.CourseEditPage"
+             Title="Course Edit Page">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Back" 
+                 IconImageSource="back.png" 
+                 Clicked="OnBackButtonClicked"/>
+    </ContentPage.ToolbarItems>
+    
+    <VerticalStackLayout Padding="20" Spacing="15">
+        <Label x:Name="CourseIdLabel" Text="Course ID" FontSize="18" />
+        <Entry x:Name="CourseImageNameEntry" Placeholder="Image Name" />
+        <Editor x:Name="CourseDescriptionEditor" Placeholder="Course Description" />
+        <Entry x:Name="CourseDurationEntry" Placeholder="Duration (minutes)" Keyboard="Numeric" />
+        <Entry x:Name="CourseCategoryIdEntry" Placeholder="Category ID" Keyboard="Numeric" />
+        <Button Text="Update" Clicked="OnUpdateButtonClicked" />
+        <Button Text="Reset" Clicked="OnResetButtonClicked" />
+    </VerticalStackLayout>
+
+</ContentPage>

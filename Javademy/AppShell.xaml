@@ -1,0 +1,28 @@
+<Shell x:Class="Javademy.AppShell"
+       xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:local="clr-namespace:Javademy.Pages"
+       FlyoutIcon="content.png"
+       FlyoutBehavior="Flyout">
+
+    <FlyoutItem Title="Home" Icon="home.png">
+        <ShellContent Title="Moon Phase" Icon="category.png"
+        ContentTemplate="{DataTemplate local:HomePage}" 
+        Route="Home"/>
+    </FlyoutItem>
+
+
+    <FlyoutItem Title="Category" Icon="category.png">
+        <ShellContent Title="List Categories" Icon="read.png" 
+            ContentTemplate="{DataTemplate local:CategoryReadPage}" />
+        <ShellContent Title="Add Category" Icon="add.png" 
+            ContentTemplate="{DataTemplate local:CategoryCreatePage}"/>
+    </FlyoutItem>
+
+    <FlyoutItem Title="Course" Icon="course.png">
+        <ShellContent Title="List Courses" Icon="read.png" 
+            ContentTemplate="{DataTemplate local:CourseReadPage}"/>
+        <ShellContent Title="Add Course" Icon="add.png" 
+            ContentTemplate="{DataTemplate local:CourseCreatePage}"/>
+    </FlyoutItem>
+</Shell>
